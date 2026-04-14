@@ -21,14 +21,18 @@ services:
 
   client:
     container_name: client
-    build: ./client
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+    build: 
+      context: ./client
+      target: dev           # ← use dev stage for local
     ports:
       - 4200:4200
     volumes:
-      - ./client:/usr/client/
-      - /usr/client/node_modules
+      - ./client:/app
+      - /app/node_modules
+    depends_on: 
+      - server
+    networks:
+      - mongo-network        # ← So vite proxy can reach `server` by name
 
   mongodb:
     container_name: mongodb
