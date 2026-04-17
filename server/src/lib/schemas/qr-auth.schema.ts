@@ -30,6 +30,27 @@ export const deviceActivateResponseSchema = Type.Object({
     deviceName: Type.String(),
 });
 
+// GET /api/auth/device-status response
+export const deviceStatusResponseSchema = Type.Object({
+    activated: Type.Boolean(),
+    deviceName: Type.Optional(Type.String()),
+});
+
+// POST /api/auth/device-deactivate response
+export const deviceDeactivateResponseSchema = Type.Object({
+    success: Type.Boolean(),
+});
+
+// PATCH /api/auth/device-rename request body
+export const deviceRenameRequestSchema = Type.Object({
+    deviceName: Type.String({ minLength: 1, maxLength: 50 }),
+});
+
+// PATCH /api/auth/device-rename response
+export const deviceRenameResponseSchema = Type.Object({
+    deviceName: Type.String(),
+});
+
 // POST /api/auth/pos-logout request body
 export const posLogoutRequestSchema = Type.Object({
     userId: Type.String(),

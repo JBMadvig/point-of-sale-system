@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-
 import { FastifyPluginCallback, FastifySchema } from 'fastify';
 
 import { setDeviceCookie } from '@lib/cookie-helper';

@@ -1,10 +1,24 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import { AuthProvider } from './providers/auth/AuthProvider.tsx';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider } from 'react-router';
+import { router } from './router.tsx';
+import { queryClient } from './lib/queryClient.ts';
+import { DeviceProvider } from './providers/device/DeviceProvider.tsx';
+import { ThemeProvider } from './providers/theme/ThemeProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+	<StrictMode>
+		<ThemeProvider>
+			<QueryClientProvider client={queryClient}>
+				<DeviceProvider>
+					<AuthProvider>
+						<RouterProvider router={router} />
+					</AuthProvider>
+				</DeviceProvider>
+			</QueryClientProvider>
+		</ThemeProvider>
+	</StrictMode>,
+);

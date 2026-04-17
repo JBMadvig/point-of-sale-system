@@ -33,3 +33,7 @@ export function setDeviceCookie(reply: FastifyReply, deviceToken: string) {
         maxAge: 365 * 24 * 60 * 60, // 1 year
     });
 }
+
+export function clearDeviceCookie(reply: FastifyReply) {
+    reply.clearCookie('deviceToken', { path: '/api/auth' });
+}
