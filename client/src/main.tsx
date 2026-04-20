@@ -8,6 +8,7 @@ import { router } from './router.tsx';
 import { queryClient } from './lib/queryClient.ts';
 import { DeviceProvider } from './providers/device/DeviceProvider.tsx';
 import { ThemeProvider } from './providers/theme/ThemeProvider.tsx';
+import { WebSocketProvider } from './providers/websocket/WebsocketProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')!).render(
 			<QueryClientProvider client={queryClient}>
 				<DeviceProvider>
 					<AuthProvider>
-						<RouterProvider router={router} />
+						<WebSocketProvider>
+							<RouterProvider router={router} />
+						</WebSocketProvider>
 					</AuthProvider>
 				</DeviceProvider>
 			</QueryClientProvider>
