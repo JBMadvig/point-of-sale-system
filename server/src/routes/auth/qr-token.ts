@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-
 import { FastifyPluginCallback, FastifySchema } from 'fastify';
 
 import { authenticateHook } from '@lib/auth-hooks';
@@ -18,7 +17,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
         url: '/qr-token',
         method: 'POST',
         schema,
-        preHandler: [authenticateHook],
+        preHandler: [ authenticateHook ],
         handler: async (
             req: FastifyRequestTypebox<typeof schema>,
             reply: FastifyReplyTypebox<typeof schema>,

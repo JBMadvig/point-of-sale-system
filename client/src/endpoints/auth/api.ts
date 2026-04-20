@@ -35,4 +35,8 @@ export const authApi = {
 			method: 'PATCH',
 			json: { deviceName },
 		}),
+	requestQRtoken: () =>
+		api<{ qrToken: string; expiresAt: string }>('/api/auth/qr-token', {
+			method: 'POST',
+		}),
 };
