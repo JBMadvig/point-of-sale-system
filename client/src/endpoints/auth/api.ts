@@ -30,7 +30,7 @@ export const authApi = {
 			method: 'POST',
 			skipAuthRetry: true,
 		}),
-	rename: (deviceName: string) =>
+	deviceRename: (deviceName: string) =>
 		api<{ deviceName: string }>('/api/auth/device-rename', {
 			method: 'PATCH',
 			json: { deviceName },

@@ -28,5 +28,5 @@ export type DeviceContextType = {
 	isLoading: boolean;
 	activate: (email: string, password: string, deviceName?: string) => Promise<void>;
 	deactivate: () => Promise<void>;
-	rename: (deviceName: string) => Promise<void>;
+	deviceRename: (deviceName: string) => Promise<void>;
 };

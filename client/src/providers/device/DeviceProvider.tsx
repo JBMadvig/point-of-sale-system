@@ -66,8 +66,8 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
 		},
 	});
 
-	const renameMut = useMutation({
-		mutationFn: (deviceName: string) => authApi.rename(deviceName),
+	const deviceRenameMut = useMutation({
+		mutationFn: (deviceName: string) => authApi.deviceRename(deviceName),
 		onSuccess: ({ deviceName }) => {
 			qc.setQueryData<DeviceActiveResponse | null>(DEVICE_STATUS_KEY, (prev) =>
 				prev ? { ...prev, deviceName } : prev,
@@ -85,8 +85,8 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
 		deactivate: async () => {
 			await deactivateMut.mutateAsync();
 		},
-		rename: async (deviceName) => {
-			await renameMut.mutateAsync(deviceName);
+		deviceRename: async (deviceName) => {
+			await deviceRenameMut.mutateAsync(deviceName);
 		},
 	};
 
