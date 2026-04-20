@@ -7,12 +7,16 @@ import { authenticateHook } from '@lib/auth-hooks';
 import { FastifyReplyTypebox, FastifyRequestTypebox } from '@lib/fastify-types';
 import { ConflictError, InternalServerError } from '@lib/http-errors';
 import { ItemModel } from '@lib/mongodb/models/item.model';
-import { CollectionItemSchema, PrimaryItemUnionCategories } from '@lib/schemas/item.schema';
+import {
+    CollectionItemSchema,
+    PrimaryItemUnionCategories,
+} from '@lib/schemas/item.schema';
 
 export default <FastifyPluginCallback>function (app, _opts, done) {
     const schema = {
         body: Type.Object({
             name: Type.String(),
+            company: Type.String(),
             primaryCategory: PrimaryItemUnionCategories,
             secondaryCategory: Type.String(),
             abv: Type.Number(),
@@ -20,6 +24,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
             price: Type.Number(),
             currency: Type.String(),
             amount: Type.Number(),
+            barcode: Type.Union([ Type.String() || Type.Null() ]),
         }),
         response: {
             200: Type.Object({
@@ -39,6 +44,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
         ) => {
             const {
                 name,
+                company,
                 primaryCategory,
                 secondaryCategory,
                 abv,
@@ -46,6 +52,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
                 price,
                 amount,
                 currency,
+                barcode,
             } = req.body;
 
             const convertedPrice = convertToDKK(price, currency);
@@ -54,8 +61,15 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
 
             const totalStockValue = averagePrice * amount;
 
+            const nameFirstLetterCapitalized =
+				name.charAt(0).toUpperCase() + name.slice(1);
+
+            const companyFirstLetterCapitalized =
+				company.charAt(0).toUpperCase() + company.slice(1);
+
             const newItem = new ItemModel({
-                name,
+                name: nameFirstLetterCapitalized,
+                company: companyFirstLetterCapitalized,
                 primaryCategory,
                 secondaryCategory,
                 abv,
@@ -63,6 +77,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
                 averagePrice,
                 currentStock: amount,
                 totalStockValue,
+                barcode: barcode ? barcode : null,
             });
 
             try {

@@ -34,6 +34,7 @@ export const FullItemUnionSchema = Type.Union([
 export const FullItemSchema = Type.Object({
     _id: MongooseObjectIdType,
     name: Type.String(),
+    company: Type.String(),
     primaryCategory: PrimaryItemUnionCategories,
     secondaryCategory: Type.String(),
     averagePrice: Type.Number(),
@@ -41,7 +42,7 @@ export const FullItemSchema = Type.Object({
     totalStockValue: Type.Number(),
     abv: Type.Number(),
     volume: Type.Number(),
-    barcode: Type.Optional(Type.String()),
+    barcode: Type.Union([ Type.String(), Type.Null() ]),
     updatedAt: MongooseDateType,
     createdAt: MongooseDateType,
 });
@@ -50,26 +51,28 @@ export const FullItemSchema = Type.Object({
 export const CollectionItemSchema = Type.Object({
     _id: MongooseObjectIdType,
     name: Type.String(),
+    company: Type.String(),
     primaryCategory: PrimaryItemUnionCategories,
     secondaryCategory: Type.String(),
     averagePrice: Type.Number(),
     currentStock: Type.Number(),
     abv: Type.Number(),
     volume: Type.Number(),
-    barcode: Type.Optional(Type.String()),
+    barcode: Type.Union([ Type.String(), Type.Null() ]),
 });
 
 // Create Item schema when adding new item to inventory
 export const CreateItemSchema = Type.Object({
     _id: MongooseObjectIdType,
     name: Type.String(),
+    company: Type.String(),
     primaryCategory: PrimaryItemUnionCategories,
     secondaryCategory: Type.String(),
     totalPaid: Type.Number(),
     abv: Type.Number(),
     volume: Type.Number(),
     amount: Type.Number(),
-    barcode: Type.Optional(Type.String()),
+    barcode: Type.Union([ Type.String(), Type.Null() ]),
 });
 
 export const ItemSchemaWithSearchAndSortAndPagination = Type.Object({
@@ -81,8 +84,8 @@ export const ItemSchemaWithSearchAndSortAndPagination = Type.Object({
         searchQuery: Type.String(),
         sortBy: FullItemUnionSchema,
         sortDirection: SortingUnionDirections,
-        page: Type.Number({ minimum:1 }),
-        entriesPrPage: Type.Number({ minimum:1, maximum:100 }),
+        page: Type.Number({ minimum: 1 }),
+        entriesPrPage: Type.Number({ minimum: 1, maximum: 100 }),
         totalPagesWithCurrentLimit: Type.Number(),
     }),
 });

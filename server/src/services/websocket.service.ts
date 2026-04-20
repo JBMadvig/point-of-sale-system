@@ -26,6 +26,8 @@ type Payload = {
     item: {
         id: string;
         name: string;
+        company: string;
+        barcode: string | null;
         primaryCategory: string;
         secondaryCategory: string;
         averagePrice: number;
@@ -52,7 +54,7 @@ export const initWebsocket = async(fastify: FastifyInstance) => {
                     const data = JSON.parse(message.data) as Payload;
                     handleIncomingMessage(newSocket, data);
                 } catch (error) {
-                    console.error('Invalid JSON received:', message.data);
+                    console.error('Invalid JSON received:', message.data, 'error:', error);
                 }
             });
 

@@ -14,8 +14,10 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
         body: Type.Object({
             id: Type.String(),
             name: Type.String(),
+            company: Type.String(),
             primaryCategory: PrimaryItemUnionCategories,
             secondaryCategory: Type.String(),
+            barcode: Type.Union([ Type.String(), Type.Null() ]),
             abv: Type.Number(),
             volume: Type.Number(),
             price: Type.Number(),
@@ -54,6 +56,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
             const {
                 id,
                 name,
+                company,
                 primaryCategory,
                 secondaryCategory,
                 abv,
@@ -61,6 +64,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
                 currency,
                 price,
                 amount,
+                barcode,
             } = req.body;
 
             // Get the item from the inventory to update the average price and total stock value
@@ -76,15 +80,23 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
             const newTotalStockValue = prevItem.totalStockValue + danishPrice;
             const averagePrice = newTotalStockValue / newTotalStock;
 
+            const nameFirstLetterCapitalized =
+				name.charAt(0).toUpperCase() + name.slice(1);
+
+            const companyFirstLetterCapitalized =
+				company.charAt(0).toUpperCase() + company.slice(1);
+
             let updatedItem;
             try {
                 updatedItem = await ItemModel.findByIdAndUpdate(id, {
-                    name,
                     primaryCategory,
                     secondaryCategory,
                     abv,
                     volume,
                     averagePrice,
+                    name: nameFirstLetterCapitalized,
+                    company: companyFirstLetterCapitalized,
+                    barcode: barcode ? barcode : null,
                     currentStock: newTotalStock,
                     totalStockValue: newTotalStockValue,
                 }, { new: true });

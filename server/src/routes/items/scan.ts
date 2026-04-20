@@ -5,7 +5,7 @@ import { FastifyPluginCallback, FastifySchema } from 'fastify';
 
 import { authenticateHook } from '@lib/auth-hooks';
 import { FastifyReplyTypebox, FastifyRequestTypebox } from '@lib/fastify-types';
-import { ForbiddenError, NotFoundError } from '@lib/http-errors';
+import { ForbiddenError } from '@lib/http-errors';
 import { ItemModel } from '@lib/mongodb/models/item.model';
 import { UserModel } from '@lib/mongodb/models/user.model';
 import { CollectionItemSchema } from '@lib/schemas/item.schema';
@@ -72,6 +72,8 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
                         item: {
                             id: obj._id.toString(),
                             name: obj.name,
+                            company: obj.company,
+                            barcode: obj.barcode,
                             primaryCategory: obj.primaryCategory,
                             secondaryCategory: obj.secondaryCategory,
                             averagePrice: convertFromDKK(obj.averagePrice, currency),
