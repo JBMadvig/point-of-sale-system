@@ -9,6 +9,7 @@ import { queryClient } from './lib/queryClient.ts';
 import { DeviceProvider } from './providers/device/DeviceProvider.tsx';
 import { ThemeProvider } from './providers/theme/ThemeProvider.tsx';
 import { WebSocketProvider } from './providers/websocket/WebsocketProvider.tsx';
+import { ToastProvider } from './shared/components/Toast.tsx';
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
@@ -17,7 +18,9 @@ createRoot(document.getElementById('root')!).render(
 				<DeviceProvider>
 					<AuthProvider>
 						<WebSocketProvider>
-							<RouterProvider router={router} />
+							<ToastProvider limit={5} timeout={5000}>
+								<RouterProvider router={router} />
+							</ToastProvider>
 						</WebSocketProvider>
 					</AuthProvider>
 				</DeviceProvider>
