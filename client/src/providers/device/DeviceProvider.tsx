@@ -9,24 +9,26 @@ import { Ctx } from './DeviceContext';
 const DEVICE_STATUS_KEY = ['device-status'] as const;
 
 export function DeviceProvider({ children }: { children: ReactNode }) {
-	const qc = useQueryClient();
+    const qc = useQueryClient();
+    const isUnitRoute = window.location.pathname.startsWith('/unit');
 
-	const statusQuery = useQuery<DeviceActiveResponse | null>({
-		queryKey: DEVICE_STATUS_KEY,
-		queryFn: async () => {
-			try {
-				return await authApi.deviceStatus();
-			} catch (err) {
-				// A 401 means "no / invalid device cookie" — that's a valid
-				// "not activated" answer, not a retryable failure.
-				if (err instanceof ApiError && err.status === 401) return null;
-				throw err;
-			}
-		},
-		retry: (failCount, err) =>
-			!(err instanceof ApiError && err.status === 401) && failCount < 2,
-		staleTime: 5 * 60_000,
-	});
+    const statusQuery = useQuery<DeviceActiveResponse | null>({
+        queryKey: DEVICE_STATUS_KEY,
+        queryFn: async () => {
+            try {
+                return await authApi.deviceStatus();
+            } catch (err) {
+                // A 401 means "no / invalid device cookie" — that's a valid
+                // "not activated" answer, not a retryable failure.
+                if (err instanceof ApiError && err.status === 401) return null;
+                throw err;
+            }
+        },
+        retry: (failCount, err) =>
+            !(err instanceof ApiError && err.status === 401) && failCount < 2,
+        staleTime: 5 * 60_000,
+        enabled: !isUnitRoute,
+    });
 
     const activateMut = useMutation({
         mutationFn: ({
@@ -46,34 +48,34 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
         },
     });
 
-	const deactivateMut = useMutation({
-		mutationFn: () => authApi.deactivate(),
-		onSuccess: () => {
-			// Drop every cached query (device status, /me, everything).
-			qc.clear();
-			// Wipe local persistence per spec.
-			localStorage.clear();
-			// Clear any non-httpOnly cookies the app writes.
-			// (httpOnly cookies — deviceToken / accessToken / refreshToken — are
-			// already cleared by the server's Set-Cookie headers.)
-			document.cookie.split(';').forEach((c) => {
-				const name = c.split('=')[0].trim();
-				if (name) document.cookie = `${name}=; Max-Age=0; path=/`;
-			});
-			// Hard reload: wipes React state, every provider re-initializes
-			// clean, and the new /device-status query correctly sees "not activated".
-			window.location.href = '/activate-device';
-		},
-	});
+    const deactivateMut = useMutation({
+        mutationFn: () => authApi.deactivate(),
+        onSuccess: () => {
+            // Drop every cached query (device status, /me, everything).
+            qc.clear();
+            // Wipe local persistence per spec.
+            localStorage.clear();
+            // Clear any non-httpOnly cookies the app writes.
+            // (httpOnly cookies — deviceToken / accessToken / refreshToken — are
+            // already cleared by the server's Set-Cookie headers.)
+            document.cookie.split(';').forEach((c) => {
+                const name = c.split('=')[0].trim();
+                if (name) document.cookie = `${name}=; Max-Age=0; path=/`;
+            });
+            // Hard reload: wipes React state, every provider re-initializes
+            // clean, and the new /device-status query correctly sees "not activated".
+            window.location.href = '/activate-device';
+        },
+    });
 
-	const deviceRenameMut = useMutation({
-		mutationFn: (deviceName: string) => authApi.deviceRename(deviceName),
-		onSuccess: ({ deviceName }) => {
-			qc.setQueryData<DeviceActiveResponse | null>(DEVICE_STATUS_KEY, (prev) =>
-				prev ? { ...prev, deviceName } : prev,
-			);
-		},
-	});
+    const deviceRenameMut = useMutation({
+        mutationFn: (deviceName: string) => authApi.deviceRename(deviceName),
+        onSuccess: ({ deviceName }) => {
+            qc.setQueryData<DeviceActiveResponse | null>(DEVICE_STATUS_KEY, (prev) =>
+                prev ? { ...prev, deviceName } : prev,
+            );
+        },
+    });
 
     const value: DeviceContextType = {
         deviceName: statusQuery.data?.deviceName ?? '',
@@ -90,5 +92,5 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
         },
     };
 
-	return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+    return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
