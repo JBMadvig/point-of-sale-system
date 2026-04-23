@@ -32,7 +32,10 @@ export const authApi = {
 		}),
 
 	/* Check is current user is signed in to the POS system */
-	getPosStatus: () => api<{ loggedIn: boolean; userId?: string }>('/api/auth/pos-status'),
+	getPosStatus: () =>
+		api<{ loggedIn: boolean; userId?: string; deviceName?: string }>('/api/auth/pos-status', {
+			skipAuthRetry: true,
+		}),
 
 	/**** DEVICE API'S  ****/
 
@@ -43,7 +46,7 @@ export const authApi = {
 		}),
 	
 		/* Activate device */
-	activate: (email: string, password: string, deviceName?: string) =>
+	activate: (email: string, password: string, deviceName: string) =>
 		api<{ deviceName: string }>('/api/auth/device-activate', {
 			method: 'POST',
 			json: { email, password, deviceName },

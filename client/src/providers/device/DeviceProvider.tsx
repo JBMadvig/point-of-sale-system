@@ -28,23 +28,23 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
 		staleTime: 5 * 60_000,
 	});
 
-	const activateMut = useMutation({
-		mutationFn: ({
-			email,
-			password,
-			deviceName,
-		}: {
-			email: string;
-			password: string;
-			deviceName?: string;
-		}) => authApi.activate(email, password, deviceName),
-		onSuccess: ({ deviceName }) => {
-			qc.setQueryData<DeviceActiveResponse>(DEVICE_STATUS_KEY, {
-				activated: true,
-				deviceName,
-			});
-		},
-	});
+    const activateMut = useMutation({
+        mutationFn: ({
+            email,
+            password,
+            deviceName,
+        }: {
+            email: string;
+            password: string;
+            deviceName: string;
+        }) => authApi.activate(email, password, deviceName),
+        onSuccess: ({ deviceName }) => {
+            qc.setQueryData<DeviceActiveResponse>(DEVICE_STATUS_KEY, {
+                activated: true,
+                deviceName,
+            });
+        },
+    });
 
 	const deactivateMut = useMutation({
 		mutationFn: () => authApi.deactivate(),
@@ -75,20 +75,20 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
 		},
 	});
 
-	const value: DeviceContextType = {
-		deviceName: statusQuery.data?.deviceName ?? null,
-		isActivated: !!statusQuery.data?.activated,
-		isLoading: statusQuery.isLoading,
-		activate: async (email, password, deviceName) => {
-			await activateMut.mutateAsync({ email, password, deviceName });
-		},
-		deactivate: async () => {
-			await deactivateMut.mutateAsync();
-		},
-		deviceRename: async (deviceName) => {
-			await deviceRenameMut.mutateAsync(deviceName);
-		},
-	};
+    const value: DeviceContextType = {
+        deviceName: statusQuery.data?.deviceName ?? '',
+        isActivated: !!statusQuery.data?.activated,
+        isLoading: statusQuery.isLoading,
+        activate: async (email, password, deviceName) => {
+            await activateMut.mutateAsync({ email, password, deviceName });
+        },
+        deactivate: async () => {
+            await deactivateMut.mutateAsync();
+        },
+        deviceRename: async (deviceName) => {
+            await deviceRenameMut.mutateAsync(deviceName);
+        },
+    };
 
 	return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

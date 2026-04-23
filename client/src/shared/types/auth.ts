@@ -23,10 +23,10 @@ export interface DeviceActiveResponse {
 }
 
 export type DeviceContextType = {
-	deviceName: string | null;
+	deviceName: string;
 	isActivated: boolean;
 	isLoading: boolean;
-	activate: (email: string, password: string, deviceName?: string) => Promise<void>;
+	activate: (email: string, password: string, deviceName: string) => Promise<void>;
 	deactivate: () => Promise<void>;
 	deviceRename: (deviceName: string) => Promise<void>;
 };
