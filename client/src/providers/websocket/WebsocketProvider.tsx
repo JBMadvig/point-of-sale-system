@@ -39,7 +39,14 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
 		return () => {
 			clearInterval(ping);
-			socket.close();
+			socket.onopen = null;
+			socket.onclose = null;
+			socket.onmessage = null;
+			if (socket.readyState === WebSocket.CONNECTING) {
+				socket.addEventListener('open', () => socket.close());
+			} else {
+				socket.close();
+			}
 		};
 	}, [qc]);
 
