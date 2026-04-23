@@ -1,3 +1,4 @@
+import { sendToSubscribers } from '@services/websocket.service';
 import { FastifyPluginCallback, FastifySchema } from 'fastify';
 
 import { deviceTokenHook } from '@lib/device-auth-hook';
@@ -7,7 +8,6 @@ import { generateTokens } from '@lib/jwt-helper';
 import { QrTokenModel } from '@lib/mongodb/models/qr-token.model';
 import { UserModel } from '@lib/mongodb/models/user.model';
 import { qrLoginRequestSchema, qrLoginResponseSchema } from '@lib/schemas/qr-auth.schema';
-import { sendToSubscribers } from '@services/websocket.service';
 
 export default <FastifyPluginCallback>function (app, _opts, done) {
     const schema = {
@@ -21,7 +21,7 @@ export default <FastifyPluginCallback>function (app, _opts, done) {
         url: '/qr-login',
         method: 'POST',
         schema,
-        preHandler: [deviceTokenHook],
+        preHandler: [ deviceTokenHook ],
         handler: async (
             req: FastifyRequestTypebox<typeof schema>,
             reply: FastifyReplyTypebox<typeof schema>,
